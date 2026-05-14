@@ -1,0 +1,78 @@
+name: CI
+
+on:
+  schedule:
+    - cron: "0 0 * * *"
+  workflow_dispatch:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    env:
+      DENO_INSTALL: /usr/local
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Clone tytydraco/ytdlmp3
+        run: git clone --depth 1 https://github.com/tytydraco/ytdlmp3.git "${GITHUB_WORKSPACE}/ytdlmp3"
+
+      - name: Install system packages
+        env:
+          DEBIAN_FRONTEND: noninteractive
+        run: |
+          sudo dpkg --add-architecture i386
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            curl \
+            p7zip-full \
+            ffmpeg \
+            nodejs \
+            npm \
+            aria2 \
+            python3 \
+            python3-pip \
+            python3-venv \
+            wine \
+            wine64 \
+            winbind \
+            wine32:i386
+
+      - name: Install yt-dlp (pip)
+        run: pip3 install --break-system-packages --no-cache-dir yt-dlp yt-dlp-ejs
+
+      - name: Install Deno
+        run: |
+          curl -fsSL https://deno.land/install.sh | sudo env DENO_INSTALL="${DENO_INSTALL}" sh
+          echo "${DENO_INSTALL}/bin" >> "${GITHUB_PATH}"
+
+      - name: Write COOKIES and CONFIG from secrets
+        env:
+          COOKIES: ${{ secrets.COOKIES }}
+          CONFIG: ${{ secrets.CONFIG }}
+        run: |
+          printf '%s\n' "$COOKIES" > ytdlmp3/.cookies
+          printf '%s\n' "$CONFIG" > ytdlmp3/config.sh
+
+      - name: Run main.sh
+        working-directory: ytdlmp3
+        run: ./main.sh
+
+      - name: Zip and encrypt out/
+        env:
+          PASSWORD: ${{ secrets.PASSWORD }}
+        working-directory: ytdlmp3
+        run: |
+          set -euo pipefail
+          shopt -s nullglob
+          matches=(out/*)
+          if [ "${#matches[@]}" -eq 0 ]; then
+            echo "No files or directories matched out/*" >&2
+            exit 1
+          fi
+          7z a -tzip -mem=AES256 -p"$PASSWORD" "${GITHUB_WORKSPACE}/out_encrypted.zip" "${matches[@]}"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: encrypted-out
+          path: out_encrypted.zip
+
