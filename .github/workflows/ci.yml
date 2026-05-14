@@ -53,6 +53,9 @@ jobs:
           printf '%s\n' "$COOKIES" > ytdlmp3/cookies.txt
           printf '%s\n' "$CONFIG" > ytdlmp3/config.sh
 
+      - name: Use bash as /bin/sh
+        run: sudo ln -sfv /bin/bash /bin/sh
+
       - name: Run main.sh
         working-directory: ytdlmp3
         run: ./main.sh
