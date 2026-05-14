@@ -50,7 +50,7 @@ jobs:
           COOKIES: ${{ secrets.COOKIES }}
           CONFIG: ${{ secrets.CONFIG }}
         run: |
-          printf '%s\n' "$COOKIES" > ytdlmp3/.cookies
+          printf '%s\n' "$COOKIES" > ytdlmp3/cookies.txt
           printf '%s\n' "$CONFIG" > ytdlmp3/config.sh
 
       - name: Run main.sh
@@ -75,4 +75,3 @@ jobs:
         with:
           name: encrypted-out
           path: out_encrypted.zip
-
