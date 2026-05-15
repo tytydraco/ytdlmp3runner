@@ -64,15 +64,7 @@ jobs:
         env:
           PASSWORD: ${{ secrets.PASSWORD }}
         working-directory: ytdlmp3
-        run: |
-          set -euo pipefail
-          shopt -s nullglob
-          matches=(out/*)
-          if [ "${#matches[@]}" -eq 0 ]; then
-            echo "No files or directories matched out/*" >&2
-            exit 1
-          fi
-          7z a -tzip -mem=AES256 -p"$PASSWORD" "${GITHUB_WORKSPACE}/out_encrypted.zip" "${matches[@]}"
+        run: ( cd out && 7z a -tzip -mem=AES256 -p"$PASSWORD" "${GITHUB_WORKSPACE}/out_encrypted.zip" . )
 
       - uses: actions/upload-artifact@v4
         with:
