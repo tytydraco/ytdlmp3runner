@@ -5,6 +5,9 @@ on:
     - cron: "0 0 * * *"
   workflow_dispatch:
 
+env:
+  RUN_NAME_PREFIX: config2-
+
 jobs:
   check:
     runs-on: ubuntu-latest
@@ -52,8 +55,12 @@ jobs:
       - name: Write COOKIES and CONFIG from secrets
         env:
           COOKIES: ${{ secrets.COOKIES }}
-          CONFIG: ${{ secrets.CONFIG }}
+          CONFIG: ${{ secrets.CONFIG2 }}
         run: |
+          if [ -z "$(printf '%s' "$CONFIG" | tr -d '[:space:]')" ]; then
+            echo "CONFIG is empty or whitespace only; aborting." >&2
+            exit 1
+          fi
           printf '%s\n' "$COOKIES" > ytdlmp3/cookies.txt
           printf '%s\n' "$CONFIG" > ytdlmp3/config.sh
 
@@ -69,9 +76,9 @@ jobs:
           PASSWORD: ${{ secrets.PASSWORD }}
           RUN_DATE: ${{ steps.run_date.outputs.RUN_DATE }}
         working-directory: ytdlmp3
-        run: ( cd out && 7z a -tzip -mem=AES256 -p"$PASSWORD" "${GITHUB_WORKSPACE}/run-${RUN_DATE}.zip" . )
+        run: ( cd out && 7z a -tzip -mem=AES256 -p"$PASSWORD" "${GITHUB_WORKSPACE}/${RUN_NAME_PREFIX}${RUN_DATE}.zip" . )
 
       - uses: actions/upload-artifact@v4
         with:
-          name: run-${{ steps.run_date.outputs.RUN_DATE }}
-          path: ${{ github.workspace }}/run-${{ steps.run_date.outputs.RUN_DATE }}.zip
+          name: ${{ env.RUN_NAME_PREFIX }}${{ steps.run_date.outputs.RUN_DATE }}
+          path: ${{ github.workspace }}/${{ env.RUN_NAME_PREFIX }}${{ steps.run_date.outputs.RUN_DATE }}.zip

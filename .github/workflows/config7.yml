@@ -1,0 +1,84 @@
+name: CI
+
+on:
+  schedule:
+    - cron: "0 0 * * *"
+  workflow_dispatch:
+
+env:
+  RUN_NAME_PREFIX: config7-
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    env:
+      DENO_INSTALL: /usr/local
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Clone tytydraco/ytdlmp3
+        run: git clone --depth 1 https://github.com/tytydraco/ytdlmp3.git "${GITHUB_WORKSPACE}/ytdlmp3"
+
+      - id: run_date
+        name: Set RUN_DATE
+        run: echo "RUN_DATE=$(date -u +%Y-%m-%d)" >> "$GITHUB_OUTPUT"
+
+      - name: Install system packages
+        env:
+          DEBIAN_FRONTEND: noninteractive
+        run: |
+          sudo dpkg --add-architecture i386
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            curl \
+            p7zip-full \
+            ffmpeg \
+            nodejs \
+            npm \
+            aria2 \
+            python3 \
+            python3-pip \
+            python3-venv \
+            wine \
+            wine64 \
+            winbind \
+            wine32:i386
+
+      - name: Install yt-dlp (pip)
+        run: pip3 install --break-system-packages --no-cache-dir yt-dlp yt-dlp-ejs
+
+      - name: Install Deno
+        run: |
+          curl -fsSL https://deno.land/install.sh | sudo env DENO_INSTALL="${DENO_INSTALL}" sh
+          echo "${DENO_INSTALL}/bin" >> "${GITHUB_PATH}"
+
+      - name: Write COOKIES and CONFIG from secrets
+        env:
+          COOKIES: ${{ secrets.COOKIES }}
+          CONFIG: ${{ secrets.CONFIG7 }}
+        run: |
+          if [ -z "$(printf '%s' "$CONFIG" | tr -d '[:space:]')" ]; then
+            echo "CONFIG is empty or whitespace only; aborting." >&2
+            exit 1
+          fi
+          printf '%s\n' "$COOKIES" > ytdlmp3/cookies.txt
+          printf '%s\n' "$CONFIG" > ytdlmp3/config.sh
+
+      - name: Use bash as /bin/sh
+        run: sudo ln -sfv /bin/bash /bin/sh
+
+      - name: Run main.sh
+        working-directory: ytdlmp3
+        run: ./main.sh
+
+      - name: Zip and encrypt out/
+        env:
+          PASSWORD: ${{ secrets.PASSWORD }}
+          RUN_DATE: ${{ steps.run_date.outputs.RUN_DATE }}
+        working-directory: ytdlmp3
+        run: ( cd out && 7z a -tzip -mem=AES256 -p"$PASSWORD" "${GITHUB_WORKSPACE}/${RUN_NAME_PREFIX}${RUN_DATE}.zip" . )
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ${{ env.RUN_NAME_PREFIX }}${{ steps.run_date.outputs.RUN_DATE }}
+          path: ${{ github.workspace }}/${{ env.RUN_NAME_PREFIX }}${{ steps.run_date.outputs.RUN_DATE }}.zip
