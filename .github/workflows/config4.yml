@@ -1,4 +1,4 @@
-name: CI
+name: config4
 
 on:
   schedule:
