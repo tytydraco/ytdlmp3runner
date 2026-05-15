@@ -16,6 +16,10 @@ jobs:
       - name: Clone tytydraco/ytdlmp3
         run: git clone --depth 1 https://github.com/tytydraco/ytdlmp3.git "${GITHUB_WORKSPACE}/ytdlmp3"
 
+      - id: run_date
+        name: Set RUN_DATE
+        run: echo "RUN_DATE=$(date -u +%Y-%m-%d)" >> "$GITHUB_OUTPUT"
+
       - name: Install system packages
         env:
           DEBIAN_FRONTEND: noninteractive
@@ -63,10 +67,11 @@ jobs:
       - name: Zip and encrypt out/
         env:
           PASSWORD: ${{ secrets.PASSWORD }}
+          RUN_DATE: ${{ steps.run_date.outputs.RUN_DATE }}
         working-directory: ytdlmp3
-        run: ( cd out && 7z a -tzip -mem=AES256 -p"$PASSWORD" "${GITHUB_WORKSPACE}/out_encrypted.zip" . )
+        run: ( cd out && 7z a -tzip -mem=AES256 -p"$PASSWORD" "${GITHUB_WORKSPACE}/run-${RUN_DATE}.zip" . )
 
       - uses: actions/upload-artifact@v4
         with:
-          name: encrypted-out
-          path: out_encrypted.zip
+          name: run-${{ steps.run_date.outputs.RUN_DATE }}
+          path: ${{ github.workspace }}/run-${{ steps.run_date.outputs.RUN_DATE }}.zip
