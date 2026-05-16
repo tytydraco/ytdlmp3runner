@@ -71,7 +71,7 @@ jobs:
 
       - name: Run main.sh
         working-directory: ytdlmp3
-        run: ./main.sh
+        run: ./main.sh || true
 
       - name: Zip and encrypt out/
         env:
