@@ -3,16 +3,18 @@ name: config9
 on:
   # schedule:
   #   - cron: "0 0 * * *"
+  #     timezone: "America/Chicago"
   workflow_dispatch:
 
 env:
   RUN_NAME_PREFIX: config9-
 
 jobs:
-  check:
+  run:
     runs-on: ubuntu-latest
     env:
       DENO_INSTALL: /usr/local
+      TZ: America/Chicago
     steps:
       - uses: actions/checkout@v4
 
@@ -21,7 +23,7 @@ jobs:
 
       - id: run_date
         name: Set RUN_DATE
-        run: echo "RUN_DATE=$(date -u +%Y-%m-%d)" >> "$GITHUB_OUTPUT"
+        run: echo "RUN_DATE=$(date +%Y-%m-%d)" >> "$GITHUB_OUTPUT"
 
       - name: Install system packages
         env:
