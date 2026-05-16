@@ -1,12 +1,12 @@
-name: config4
+name: config9
 
 on:
-  schedule:
-    - cron: "0 0 * * *"
+  # schedule:
+  #   - cron: "0 0 * * *"
   workflow_dispatch:
 
 env:
-  RUN_NAME_PREFIX: config4-
+  RUN_NAME_PREFIX: config10-
 
 jobs:
   check:
@@ -55,7 +55,7 @@ jobs:
       - name: Write COOKIES and CONFIG from secrets
         env:
           COOKIES: ${{ secrets.COOKIES }}
-          CONFIG: ${{ secrets.CONFIG4 }}
+          CONFIG: ${{ secrets.CONFIG10 }}
         run: |
           if [ -z "$(printf '%s' "$CONFIG" | tr -d '[:space:]')" ]; then
             echo "CONFIG is empty or whitespace only; aborting." >&2
