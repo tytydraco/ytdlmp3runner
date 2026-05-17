@@ -73,14 +73,14 @@ jobs:
         working-directory: ytdlmp3
         run: ./main.sh || true
 
-      - name: Zip and encrypt out/
+      - name: Archive and encrypt out/
         env:
           PASSWORD: ${{ secrets.PASSWORD }}
           RUN_DATE: ${{ steps.run_date.outputs.RUN_DATE }}
         working-directory: ytdlmp3
-        run: ( cd out && 7z a -tzip -mem=AES256 -p"$PASSWORD" "${GITHUB_WORKSPACE}/${RUN_NAME_PREFIX}${RUN_DATE}.zip" . )
+        run: ( cd out && 7z a -t7z -mhe=on -mem=AES256 -p"$PASSWORD" "${GITHUB_WORKSPACE}/${RUN_NAME_PREFIX}${RUN_DATE}.7z" . )
 
       - uses: actions/upload-artifact@v4
         with:
           name: ${{ env.RUN_NAME_PREFIX }}${{ steps.run_date.outputs.RUN_DATE }}
-          path: ${{ github.workspace }}/${{ env.RUN_NAME_PREFIX }}${{ steps.run_date.outputs.RUN_DATE }}.zip
+          path: ${{ github.workspace }}/${{ env.RUN_NAME_PREFIX }}${{ steps.run_date.outputs.RUN_DATE }}.7z
