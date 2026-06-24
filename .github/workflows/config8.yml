@@ -34,7 +34,6 @@ jobs:
           sudo apt-get install -y --no-install-recommends \
             curl \
             p7zip-full \
-            ffmpeg \
             nodejs \
             npm \
             aria2 \
@@ -45,6 +44,13 @@ jobs:
             wine64 \
             winbind \
             wine32:i386
+
+      - name: Install latest FFmpeg
+        run: |
+          wget https://johnvansickle.com/ffmpeg/releases/ffmpeg-release-amd64-static.tar.xz
+          tar -xf ffmpeg-release-amd64-static.tar.xz
+          sudo cp ffmpeg-*-amd64-static/ffmpeg /usr/local/bin/
+          sudo cp ffmpeg-*-amd64-static/ffprobe /usr/local/bin/
 
       - name: Install yt-dlp (pip)
         run: pip3 install --break-system-packages --no-cache-dir yt-dlp yt-dlp-ejs
