@@ -71,6 +71,8 @@ jobs:
 
       - name: Run main.sh
         working-directory: ytdlmp3
+        env:
+          SUBSCRIPTIONS: ${{ secrets.SUBSCRIPTIONS }}
         run: ./main.sh || true
 
       - name: Archive and encrypt out/
