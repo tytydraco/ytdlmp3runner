@@ -35,6 +35,7 @@ jobs:
             curl \
             p7zip-full \
             ffmpeg \
+            gpac \
             nodejs \
             npm \
             aria2 \
