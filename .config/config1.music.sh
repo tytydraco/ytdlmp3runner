@@ -49,7 +49,7 @@ YTDLP_ARGS_MUSIC=(
     --playlist-end 20
     --ignore-errors
     --no-overwrites
-    --download-archive .archivemusic
+    # --download-archive .archivemusic
     --concurrent-fragments 3
     --cookies "$COOKIES_FILE"
     --windows-filenames
@@ -61,7 +61,7 @@ YTDLP_ARGS_MUSIC=(
     --audio-format mp3
     --audio-quality 0
     --format "bestaudio/best"
-    --output "$OUT_DIR_MUSIC/%(playlist)s/%(uploader)s - %(title)s.%(ext)s"
+    --output "$OUT_DIR_MUSIC/%(playlist)s/%(playlist_index)05d.%(uploader)s.%(title)s.%(ext)s"
 )
 YTDLP_ARGS_AUDIO=()
 YTDLP_ARGS_VIDEO=()

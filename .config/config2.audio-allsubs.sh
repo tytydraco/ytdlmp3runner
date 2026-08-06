@@ -55,7 +55,7 @@ YTDLP_ARGS_AUDIO=(
     --audio-format mp3
     --audio-quality 8
     --format "bestaudio/best"
-    --postprocessor-args "ffmpeg:-metadata album=!YOUTUBE -ar:a 16000 -ac:a 1"
+    --postprocessor-args "ffmpeg:-ar:a 16000 -ac:a 1"
     --output "$OUT_DIR_AUDIO/%(channel)s/%(upload_date)s.%(title)s.%(ext)s"
 )
 YTDLP_ARGS_VIDEO=()
