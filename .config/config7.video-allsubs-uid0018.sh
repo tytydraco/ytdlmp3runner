@@ -23,6 +23,9 @@ OUT_DIR_MUSIC="out/music"
 OUT_DIR_AUDIO="out/audio"
 OUT_DIR_VIDEO="out/video"
 
+# CLEAN MUSIC FOLDER - FRESH INDICIES.
+[[ -d "$OUT_DIR_MUSIC" ]] && rm -rf "${OUT_DIR_MUSIC:?}"/*
+
 # Download parameters:
 # BROWSER_COOKIES="firefox"
 PRESERVE_ORIGINAL="false"
