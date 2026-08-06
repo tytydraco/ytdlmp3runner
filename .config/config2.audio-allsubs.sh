@@ -39,7 +39,6 @@ COOKIES_FILE="cookies.txt"
 DATE_CUTOFF=$(date -d '1 day ago' '+%Y%m%d')
 YTDLP_ARGS_MUSIC=()
 YTDLP_ARGS_AUDIO=(
-    --match-filter "availability=public"
     --lazy-playlist
     --break-match-filters "upload_date >= $DATE_CUTOFF"
     # --match-filter "duration < 14400"

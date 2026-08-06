@@ -47,7 +47,6 @@ CONVERTERS_VIDEO=()
 # Download configurations for yt-dlp:
 COOKIES_FILE="cookies.txt"
 YTDLP_ARGS_MUSIC=(
-    --match-filter "availability=public"
     --lazy-playlist
     --playlist-end 20
     --ignore-errors
