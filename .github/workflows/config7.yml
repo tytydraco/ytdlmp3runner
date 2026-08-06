@@ -55,25 +55,19 @@ jobs:
           curl -fsSL https://deno.land/install.sh | sudo env DENO_INSTALL="${DENO_INSTALL}" sh
           echo "${DENO_INSTALL}/bin" >> "${GITHUB_PATH}"
 
-      - name: Write COOKIES and CONFIG from secrets
+      - name: Write config and other files
         env:
           COOKIES: ${{ secrets.COOKIES }}
-          CONFIG: ${{ secrets.CONFIG7 }}
         run: |
-          if [ -z "$(printf '%s' "$CONFIG" | tr -d '[:space:]')" ]; then
-            echo "CONFIG is empty or whitespace only; aborting." >&2
-            exit 1
-          fi
           printf '%s\n' "$COOKIES" > ytdlmp3/cookies.txt
-          printf '%s\n' "$CONFIG" > ytdlmp3/config.sh
+          cp .config/config7.*sh ytdlmp3/config.sh
+          cp .config/subscriptions.txt ytdlmp3/subscriptions.txt
 
       - name: Use bash as /bin/sh
         run: sudo ln -sfv /bin/bash /bin/sh
 
       - name: Run main.sh
         working-directory: ytdlmp3
-        env:
-          SUBSCRIPTIONS: ${{ secrets.SUBSCRIPTIONS }}
         run: ./main.sh || true
 
       - name: Archive and encrypt out/
