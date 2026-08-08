@@ -47,6 +47,7 @@ CONVERTERS_VIDEO=()
 # Download configurations for yt-dlp:
 COOKIES_FILE="cookies.txt"
 YTDLP_ARGS_MUSIC=(
+    --extractor-args "youtube:player_client=default,web_embedded"
     --lazy-playlist
     --playlist-end 20
     --ignore-errors

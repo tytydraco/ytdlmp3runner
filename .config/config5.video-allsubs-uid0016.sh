@@ -42,6 +42,7 @@ DATE_CUTOFF=$(date -d '1 day ago' '+%Y%m%d')
 YTDLP_ARGS_MUSIC=()
 YTDLP_ARGS_AUDIO=()
 YTDLP_ARGS_VIDEO=(
+    --extractor-args "youtube:player_client=default,web_embedded"
     --lazy-playlist
     --break-match-filters "upload_date >= $DATE_CUTOFF"
     # --match-filter "duration < 7200"
